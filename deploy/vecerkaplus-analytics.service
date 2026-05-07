@@ -1,0 +1,15 @@
+[Unit]
+Description=VečerkaPlus Analytics Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=petr-mikeska
+WorkingDirectory=/home/petr-mikeska/projects/vecerkaplus-analytics
+EnvironmentFile=/home/petr-mikeska/projects/vecerkaplus-analytics/.env
+ExecStart=/home/petr-mikeska/miniconda3/bin/streamlit run app/Home.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
