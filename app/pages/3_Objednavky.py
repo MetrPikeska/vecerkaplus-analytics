@@ -13,8 +13,8 @@ from src.etl.clean import clean_products, clean_orders
 from src.etl.transform import explode_items, daily_revenue, hourly_heatmap, top_products, SERVICE_HOURS, DAY_ORDER
 from src.etl.demo_data import generate_demo_orders
 
-st.set_page_config(page_title="Objednávky – VečerkaPlus", page_icon="🛒", layout="wide")
-st.title("🛒 Objednávky")
+st.set_page_config(page_title="Objednávky – VečerkaPlus", page_icon=":shopping_trolley:", layout="wide")
+st.title("Objednávky")
 
 # ── Data source toggle ────────────────────────────────────────────────────────
 use_demo = st.sidebar.toggle("Demo data (150 syntetických objednávek)", value=False)

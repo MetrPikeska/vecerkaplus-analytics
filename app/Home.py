@@ -16,7 +16,7 @@ from src.config import TIMEZONE
 
 st.set_page_config(
     page_title="VečerkaPlus Analytics",
-    page_icon="🍺",
+    page_icon=":beer:",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -156,31 +156,24 @@ if "sound_enabled" not in st.session_state:
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 st.sidebar.markdown("### Live monitoring")
-live_mode = st.sidebar.toggle("🔴 Live mode (auto-refresh 30s)", value=False)
+live_mode = st.sidebar.toggle("Live mode (auto-refresh 30s)", value=False)
 st.session_state.sound_enabled = st.sidebar.toggle(
-    "🔊 Zvukové notifikace", value=st.session_state.sound_enabled
+    "Zvukové notifikace", value=st.session_state.sound_enabled
 )
 if live_mode:
     refresh_interval = st.sidebar.selectbox("Interval", [15, 30, 60], index=1, format_func=lambda x: f"{x}s")
 
 st.sidebar.divider()
-st.sidebar.markdown(
-    "**Zvuky dle stavu:**\n"
-    "- 🔵 nová → 3× stoupající tón\n"
-    "- 🟡 přijatá → 2× pípnutí\n"
-    "- 🟢 doručená → fanfára\n"
-    "- 🔴 zrušená → sestupný bzukot"
-)
-st.sidebar.success("Vyberte stránku výše.")
+
 
 # ── Header ────────────────────────────────────────────────────────────────────
-st.title("🍺 VečerkaPlus Analytics")
+st.title("VečerkaPlus Analytics")
 
 is_open, next_label = _shift_status()
 if is_open:
-    st.success("🟢 **OTEVŘENO** — směna právě probíhá")
+    st.success("OTEVŘENO — směna právě probíhá")
 else:
-    st.error(f"🔴 **ZAVŘENO** — {next_label}")
+    st.error(f"ZAVŘENO — {next_label}")
 
 st.divider()
 
@@ -225,11 +218,9 @@ if not orders_df.empty:
     if changed_orders:
         for cname, old_s, new_s in changed_orders:
             if old_s == "—":
-                st.toast(f"🔵 Nová objednávka: **{cname}**", icon="🛒")
+                st.toast(f"Nová objednávka: {cname}", icon="N")
             else:
-                icons = {"přijatá": "🟡", "doručená": "🟢", "zrušená": "🔴"}
-                icon = icons.get(new_s, "ℹ️")
-                st.toast(f"{icon} {cname}: {old_s} → **{new_s}**")
+                st.toast(f"{cname}: {old_s} → {new_s}")
 
 # ── KPIs ──────────────────────────────────────────────────────────────────────
 st.subheader("Přehled")
@@ -266,10 +257,8 @@ with col_left:
         st.info("Žádné objednávky v databázi.")
     else:
         last10 = orders_df.sort_values("created_at", ascending=False).head(10)
-        STATUS_ICON = {"nová": "🔵", "přijatá": "🟡", "doručená": "🟢", "zrušená": "🔴"}
         display = last10[["created_at", "name", "total", "status", "payment"]].copy()
         display["created_at"] = display["created_at"].dt.strftime("%d.%m %H:%M")
-        display["status"] = display["status"].map(lambda s: f"{STATUS_ICON.get(s, '')} {s}")
         display = display.rename(columns={
             "created_at": "Čas", "name": "Zákazník",
             "total": "Kč", "status": "Stav", "payment": "Platba",
@@ -282,8 +271,8 @@ with col_right:
         st.info("Bez dat.")
     else:
         status_counts = recent["status"].value_counts() if not recent.empty else pd.Series(dtype=int)
-        for status, icon in [("nová", "🔵"), ("přijatá", "🟡"), ("doručená", "🟢"), ("zrušená", "🔴")]:
-            st.metric(f"{icon} {status.capitalize()}", int(status_counts.get(status, 0)))
+        for status in ["nová", "přijatá", "doručená", "zrušená"]:
+            st.metric(status.capitalize(), int(status_counts.get(status, 0)))
 
 # ── Auto-refresh ──────────────────────────────────────────────────────────────
 if live_mode:

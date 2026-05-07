@@ -10,8 +10,8 @@ import pandas as pd
 from src.etl.load import load_products
 from src.etl.clean import clean_products
 
-st.set_page_config(page_title="Produkty – VečerkaPlus", page_icon="📦", layout="wide")
-st.title("📦 Produkty")
+st.set_page_config(page_title="Produkty – VečerkaPlus", page_icon=":package:", layout="wide")
+st.title("Produkty")
 
 
 @st.cache_data(ttl=300)
@@ -113,7 +113,7 @@ if view == "Karty":
                         unsafe_allow_html=True,
                     )
                 stock = int(product.get("stock", 0))
-                stock_color = "🟢" if stock > 5 else ("🟡" if stock > 0 else "🔴")
+                stock_color = "OK" if stock > 5 else ("nízký" if stock > 0 else "OUT")
                 st.markdown(
                     f"**{product['name']}**  \n"
                     f"*{product.get('category', '')}*  \n"

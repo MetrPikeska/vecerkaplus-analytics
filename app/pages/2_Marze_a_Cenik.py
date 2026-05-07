@@ -12,8 +12,8 @@ from src.etl.load import load_products
 from src.etl.clean import clean_products
 from src.config import TARGET_MARGIN, FUZZY_CUTOFF
 
-st.set_page_config(page_title="Marže & Ceník – VečerkaPlus", page_icon="💰", layout="wide")
-st.title("💰 Marže & Ceník")
+st.set_page_config(page_title="Marže & Ceník – VečerkaPlus", page_icon=":chart:", layout="wide")
+st.title("Marže & Ceník")
 
 TARGET_PCT = int(TARGET_MARGIN * 100)
 

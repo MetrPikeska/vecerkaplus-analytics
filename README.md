@@ -10,30 +10,30 @@ Tento projekt je separátní Python/Streamlit aplikace běžící na vlastním U
 
 ## Co umí
 
-### 📦 Produkty
+### Produkty
 - KPI karty: počet produktů, kategorie, průměrná cena, hodnota skladu
 - Sloupcový graf dle kategorie + histogram cen
-- Karta každého produktu s **reálnou fotkou**, cenou a stavem skladu (🟢/🟡/🔴)
+- Karta každého produktu s **reálnou fotkou**, cenou a stavem skladu (OK / nízký / OUT)
 - Filtr dle kategorie a cenového rozsahu; přepínač karet / tabulky
 
-### 💰 Marže & Ceník
+### Marže & Ceník
 - Upload CSV s nákupními cenami z Makra (nebo automatické načtení ukázkového souboru)
 - **Fuzzy matching** (rapidfuzz, cutoff 70) — páruje názvy přes rozdíly v diakritice a formátu
 - Výpočet marže, srovnání s cílovou marží (35 %), doporučené prodejní ceny
 - Červené zvýraznění produktů pod cílovou marží
 
-### 🛒 Objednávky
+### Objednávky
 - **Live monitoring** s auto-refresh (15/30/60 s) a zvukovými notifikacemi při změně stavu:
-  - 🔵 nová → 3× stoupající tón
-  - 🟡 přijatá → 2× pípnutí
-  - 🟢 doručená → dur fanfára
-  - 🔴 zrušená → sestupný bzukot
+  - nová → 3× stoupající tón
+  - přijatá → 2× pípnutí
+  - doručená → dur fanfára
+  - zrušená → sestupný bzukot
 - Denní tržby, heatmapa objednávek (den × hodina), platební metody
 - Top 10 produktů dle prodaného množství
 - **Market basket analýza** (Apriori) — které produkty se kupují spolu
 - Toggle pro **demo data** (150 syntetických objednávek)
 
-### 🏠 Home dashboard
+### Home dashboard
 - Shift status: OTEVŘENO / ZAVŘENO s časem příštího otevření
 - Live KPI (tržby za 7 dní, průměrná objednávka, tržby celkem)
 - Tabulka posledních objednávek + status breakdown
@@ -69,7 +69,7 @@ SUPABASE_URL=https://<project-id>.supabase.co
 SUPABASE_SERVICE_KEY=<service_role_key>
 ```
 
-> ⚠️ Používej **service role key** — RLS na tabulce `orders` neumožňuje anonymní SELECT.
+> **Pozor:** Používej **service role key** — RLS na tabulce `orders` neumožňuje anonymní SELECT.
 
 ## Struktura projektu
 
