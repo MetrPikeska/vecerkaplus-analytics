@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
@@ -67,9 +69,46 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## Project-Specific Guidelines
 
-- This is a Python/Streamlit app, not the main VečerkaPlus React project
-- Read kontext.md for long-term context, focus on Phase 1 only
-- Supabase access requires SERVICE ROLE KEY (anon key has no SELECT on orders)
-- Items JSONB: [{"id": "uuid", "name": "...", "price": 59, "quantity": 2}]
-- Timezone: always Europe/Prague
-- Demo data uses real product names and prices from VečerkaPlus
+This is a Python/Streamlit analytics dashboard for VečerkaPlus (night delivery service). It is separate from the main React/Vercel app and runs on its own Ubuntu server at `data.vecerkaplus.cz`.
+
+### Running the app
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env  # fill SUPABASE_URL and SUPABASE_SERVICE_KEY
+streamlit run app/Home.py --server.port 8501
+```
+
+There are no tests. Verify changes by running the app and exercising the relevant page.
+
+### Architecture
+
+```
+app/Home.py             — dashboard + live order monitoring (auto-refresh via time.sleep + st.rerun)
+app/pages/1_Produkty.py — product catalog with photos
+app/pages/2_Marze_a_Cenik.py — margin analysis with Makro CSV upload + fuzzy matching
+app/pages/3_Objednavky.py    — order analytics (heatmap, market basket via Apriori)
+app/pages/4_Rozvoz.py        — delivery cost calculator (Google Distance Matrix)
+src/config.py           — env vars + constants (TARGET_MARGIN, FUZZY_CUTOFF, TIMEZONE, ORIGIN)
+src/supabase_client.py  — singleton Supabase client
+src/etl/load.py         — raw DB fetches (products, orders)
+src/etl/clean.py        — type casting, timezone normalization
+src/etl/transform.py    — explode_items(), hourly_heatmap(), top_products(), daily_revenue()
+src/etl/demo_data.py    — synthetic order generator (150 orders) for the demo toggle
+data/distance_cache.json — persisted Google Maps distance cache
+```
+
+Pages import from `src/` using `sys.path.insert(0, ...)` at the top — all pages do this.
+
+### Key data facts
+
+- Supabase requires **SERVICE ROLE KEY** — anon key has RLS blocking SELECT on `orders`
+- `orders.items` is a JSONB column: `[{"id": "uuid", "name": "...", "price": 59, "quantity": 2}]`
+- Order statuses: `nová → přijatá → doručená`, cancellable to `zrušená` from any state
+- Timezone: always `Europe/Prague` — use `pytz.timezone(TIMEZONE)` from `src.config`
+- Revenue KPIs count only orders with `status == "doručená"`
+- Demo data uses real product names/prices; toggled per-page via `st.session_state`
+
+### Context
+
+Read `CONTEXT.md` for domain terminology and business rules. Read `VISION.md` for roadmap phases — focus on Phase 1 (current) only.
