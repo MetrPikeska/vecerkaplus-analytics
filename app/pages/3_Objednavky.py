@@ -122,7 +122,7 @@ if not pivot.empty and pivot.values.sum() > 0:
     fig_heat.update_layout(
         xaxis_title="Hodina",
         yaxis_title="Den",
-        yaxis=dict(categoryorder="array", categoryarray=DAY_ORDER),
+        yaxis=dict(categoryorder="array", categoryarray=list(reversed(DAY_ORDER))),
         margin=dict(t=20),
         height=250,
     )
