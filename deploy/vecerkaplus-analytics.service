@@ -7,7 +7,7 @@ Type=simple
 User=petr-mikeska
 WorkingDirectory=/home/petr-mikeska/projects/vecerkaplus-analytics
 EnvironmentFile=/home/petr-mikeska/projects/vecerkaplus-analytics/.env
-ExecStart=/home/petr-mikeska/miniconda3/bin/streamlit run app/Home.py
+ExecStart=/home/petr-mikeska/miniconda3/bin/python3 -m streamlit run app/Home.py --server.port 8501 --server.headless true
 Restart=on-failure
 RestartSec=5
 
