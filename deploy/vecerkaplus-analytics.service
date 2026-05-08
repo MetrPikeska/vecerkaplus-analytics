@@ -4,10 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-User=petr-mikeska
-WorkingDirectory=/home/petr-mikeska/projects/vecerkaplus-analytics
-EnvironmentFile=/home/petr-mikeska/projects/vecerkaplus-analytics/.env
-ExecStart=/home/petr-mikeska/miniconda3/bin/python3 -m streamlit run app/Home.py --server.port 8501 --server.headless true
+User=metr
+WorkingDirectory=/home/metr/projects/vecerkaplus-analytics
+EnvironmentFile=/home/metr/projects/vecerkaplus-analytics/.env
+ExecStart=/usr/bin/python3 -m streamlit run app/Home.py --server.port 8501 --server.headless true
 Restart=on-failure
 RestartSec=5
 

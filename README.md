@@ -51,14 +51,14 @@ Python 3.11+
 └── python-dotenv   — konfigurace
 ```
 
-## Instalace
+## Lokální spuštění
 
 ```bash
 git clone https://github.com/<user>/vecerkaplus-analytics
 cd vecerkaplus-analytics
 pip install -r requirements.txt
 cp .env.example .env
-# Doplň SUPABASE_URL a SUPABASE_SERVICE_KEY
+nano .env  # doplň hodnoty (viz níže)
 python3 -m streamlit run app/Home.py --server.port 8501
 ```
 
@@ -66,12 +66,15 @@ App bude dostupná na **http://127.0.0.1:8501**.
 
 ## Konfigurace
 
+Soubor `.env`:
+
 ```env
 SUPABASE_URL=https://<project-id>.supabase.co
 SUPABASE_SERVICE_KEY=<service_role_key>
+GOOGLE_MAPS_API_KEY=<api_key>  # volitelné, jen pro stránku Rozvoz
 ```
 
-> **Pozor:** Používej **service role key** — RLS na tabulce `orders` neumožňuje anonymní SELECT.
+> **Pozor:** Používej **service role key** — RLS na tabulce `orders` neumožňuje anonymní SELECT. Anon key nebude fungovat.
 
 ## Struktura projektu
 
