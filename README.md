@@ -59,8 +59,10 @@ cd vecerkaplus-analytics
 pip install -r requirements.txt
 cp .env.example .env
 # Doplň SUPABASE_URL a SUPABASE_SERVICE_KEY
-streamlit run app/Home.py --server.port 8501
+python3 -m streamlit run app/Home.py --server.port 8501
 ```
+
+App bude dostupná na **http://127.0.0.1:8501**.
 
 ## Konfigurace
 
