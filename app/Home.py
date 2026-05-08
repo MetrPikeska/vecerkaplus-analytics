@@ -271,8 +271,16 @@ with col_right:
         st.info("Bez dat.")
     else:
         status_counts = recent["status"].value_counts() if not recent.empty else pd.Series(dtype=int)
-        for status in ["nová", "přijatá", "doručená", "zrušená"]:
-            st.metric(status.capitalize(), int(status_counts.get(status, 0)))
+        col_a, col_b = st.columns(2)
+        status_list = ["nová", "přijatá", "doručená", "zrušená"]
+        split = len(status_list) // 2
+        with col_a:
+            for status in status_list[:split]:
+                st.metric(status.capitalize(), int(status_counts.get(status, 0)))
+        with col_b:
+            for status in status_list[split:]:
+                st.metric(status.capitalize(), int(status_counts.get(status, 0)))
+       
 
 # ── Auto-refresh ──────────────────────────────────────────────────────────────
 if live_mode:
