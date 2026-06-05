@@ -1,5 +1,6 @@
 import sys
 import os
+from html import escape
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
@@ -14,9 +15,154 @@ st.set_page_config(page_title="Produkty – VečerkaPlus", page_icon=":package:"
 st.title("Produkty")
 
 
+st.markdown(
+    """
+    <style>
+      .product-card {
+        min-height: 276px;
+        padding: 12px;
+        border: 1px solid rgba(212, 175, 106, 0.18);
+        border-radius: 12px;
+        background: #14141c;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+      }
+
+      .product-image-frame {
+        height: 148px;
+        margin-bottom: 12px;
+        border-radius: 9px;
+        background: #ededeb;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .product-image-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .product-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #77726b;
+        font-size: 0.82rem;
+        letter-spacing: 0.01em;
+      }
+
+      .product-name {
+        min-height: 2.45rem;
+        color: #f1eee7;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .product-category {
+        margin-top: 6px;
+        color: #b8b1a5;
+        font-size: 0.86rem;
+        font-style: italic;
+      }
+
+      .product-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .product-price {
+        color: #f2d48a;
+        font-weight: 800;
+      }
+
+      .stock-pill {
+        white-space: nowrap;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.07);
+        color: #d8d4cc;
+      }
+
+      .stock-pill.low {
+        background: rgba(212, 175, 106, 0.16);
+        color: #f2d48a;
+      }
+
+      .stock-pill.out {
+        background: rgba(239, 68, 68, 0.16);
+        color: #fca5a5;
+      }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+PLACEHOLDER_IMAGE_HTML = (
+    '<div class="product-image-frame"><div class="product-image-placeholder">bez foto</div></div>'
+)
+
+
 @st.cache_data(ttl=300)
 def get_products() -> pd.DataFrame:
     return clean_products(load_products())
+
+
+def render_product_image(img_url: object) -> str:
+    """render a product image with a client-side fallback for broken URLs."""
+    normalized_img_url = "" if pd.isna(img_url) else str(img_url).strip()
+
+    if not normalized_img_url:
+        return PLACEHOLDER_IMAGE_HTML
+
+    safe_url = escape(normalized_img_url, quote=True)
+    return f"""
+        <div class="product-image-frame">
+          <img
+            src="{safe_url}"
+            alt=""
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          />
+          <div class="product-image-placeholder" style="display:none">bez foto</div>
+        </div>
+    """
+
+
+def render_product_card(product: pd.Series) -> None:
+    """render a compact product card for the products grid."""
+    stock = int(product.get("stock", 0))
+    stock_label = "OK" if stock > 5 else ("nízký" if stock > 0 else "OUT")
+    stock_class = "out" if stock <= 0 else ("low" if stock <= 5 else "")
+    name = escape(str(product.get("name", "")))
+    category = escape(str(product.get("category", "")))
+    price = escape(str(product.get("price", "")))
+    image_html = render_product_image(product.get("img", ""))
+
+    st.markdown(
+        f"""
+        <div class="product-card">
+          {image_html}
+          <div class="product-name">{name}</div>
+          <div class="product-category">{category}</div>
+          <div class="product-meta">
+            <div class="product-price">{price} Kč</div>
+            <div class="stock-pill {stock_class}">{stock_label} {stock} ks</div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 try:
@@ -97,30 +243,13 @@ st.caption(f"{len(filtered)} produktů")
 
 # ── Card view ─────────────────────────────────────────────────────────────────
 if view == "Karty":
-    COLS = 4
+    COLS = 5
     rows = [filtered.iloc[i : i + COLS] for i in range(0, len(filtered), COLS)]
     for row_df in rows:
         cols = st.columns(COLS)
         for col, (_, product) in zip(cols, row_df.iterrows()):
             with col:
-                img_url = product.get("img", "")
-                if img_url:
-                    st.image(img_url, use_container_width=True)
-                else:
-                    st.markdown(
-                        "<div style='height:120px;background:#eee;border-radius:8px;display:flex;"
-                        "align-items:center;justify-content:center;color:#aaa'>bez foto</div>",
-                        unsafe_allow_html=True,
-                    )
-                stock = int(product.get("stock", 0))
-                stock_color = "OK" if stock > 5 else ("nízký" if stock > 0 else "OUT")
-                st.markdown(
-                    f"**{product['name']}**  \n"
-                    f"*{product.get('category', '')}*  \n"
-                    f"**{product['price']} Kč** &nbsp; {stock_color} {stock} ks",
-                    unsafe_allow_html=False,
-                )
-                st.markdown("---")
+                render_product_card(product)
 
 # ── Table view ────────────────────────────────────────────────────────────────
 else:
